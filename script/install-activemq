@@ -1,0 +1,46 @@
+#!/usr/bin/env perl
+package # Hide package name from PAUSE
+  Alien::Selenium::Install;
+use Moose;
+use Method::Signatures::Simple;
+use MooseX::Getopt;
+use MooseX::Types::Moose qw/Str Num/;
+use MooseX::Types::Path::Class;
+use File::ShareDir qw/dist_dir/;
+use namespace::autoclean;
+
+has install_dir => ( isa => 'Path::Class::Dir', is => 'ro', coerce => 1,
+    lazy_build => 1,
+);
+
+has tarball => ( isa => 'Path::Class::File', is => 'ro', coerce => 1,
+    lazy_build => 1
+);
+
+has version_number => ( isa => Num, is => 'ro', required => 1, lazy_build => 1 );
+
+method _build_version_number {
+    return '5.2.0' unless $self->has_download_uri;
+    $self->download_uri =~ /activemq-(.+\d)/;
+}
+
+has download_uri => ( isa => Str, is => 'ro', lazy_build => 1 );
+
+method _build_download_uri {
+    sprintf("http://www.apache.org/dyn/closer.cgi/activemq/apache-activemq/5.2.0/apache-activemq-%s-bin.tar.gz", $self->version_number);
+}
+
+method _build_install_dir {
+    dist_dir 'Alien-ActiveMQ';
+}
+
+method run {
+    # Noop
+}
+
+__PACKAGE__->meta->make_immutable;
+__PACKAGE__->new_with_options->run unless caller;
+1;
+
+__END__
+
