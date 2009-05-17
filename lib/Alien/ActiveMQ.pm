@@ -7,7 +7,7 @@ use Scope::Guard;
 use IPC::Run qw/start/;
 use namespace::autoclean;
 
-my $VERSION = 0.00001;
+our $VERSION = '0.00001';
 
 #method get_installed_versions {}
 
