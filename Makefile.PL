@@ -19,6 +19,7 @@ requires 'IPC::Run';
 requires 'Scope::Guard';
 
 install_share 'share';
+install_script 'script/install-activemq';
 
 auto_install;
 WriteAll();
