@@ -19,7 +19,9 @@ method get_version_dir ($version) {
     return dir( dist_dir('Alien-ActiveMQ'), $version );
 }
 
-#method is_version_installed ($version) {}
+method is_version_installed ($version) {
+    -d $self->get_version_dir($version)
+}
 
 method get_licence_filename ($version) {
     my $dir = $self->get_version_dir($version);
@@ -55,7 +57,7 @@ Alien::ActiveMQ - Manages installs of versions of Apache ActiveMQ, and provides 
     use Alien::ActiveMQ;
 
     {
-        my $mq = Alien::ActiveMQ::run_server
+        my $mq = Alien::ActiveMQ->run_server
         
         # Apache MQ is now running on the default port, you
         # can now test your Net::Stomp based code
@@ -68,7 +70,7 @@ This module, along with the bundled C< install-apachemq > script,
 helps to manage installations of the Apache ActiveMQ message queueing software,
 from L<http://activemq.apache.org>.
 
-=head1 FUNCTIONS
+=head1 CLASS METHODS
 
 =head2 run_server ([ $version ])
 
@@ -81,6 +83,13 @@ to shutdown.
 
 Returns a L<Path::Class::Dir> object to where a particular version of ActiveMQ
 is installed.
+
+If a version is not provided, then the latest available version at the time of
+writing (5.2.0) is used.
+
+=head2 is_version_installed ([ $version ])
+
+Returns true if the version directory for the supplied version exists.
 
 =head2 get_license_file ([ $version ])
 
