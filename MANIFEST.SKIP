@@ -39,8 +39,11 @@
 (\w+-)*(\w+)-\d\.\d+(?:\.tar\.gz)?$
 
 \.t\.log$
+\.gitignore$
+MANIFEST.SKIP$
 
 \.prove$
+\.shipit$
 
 # XS shit
 \.(?:bs|c|o)$
