@@ -3,11 +3,17 @@ package # Hide package name from PAUSE
   Alien::Selenium::Install;
 use Moose;
 use Method::Signatures::Simple;
-use MooseX::Getopt;
-use MooseX::Types::Moose qw/Str Num/;
+use MooseX::Types::Moose qw/Str/;
 use MooseX::Types::Path::Class;
+use Path::Class qw/file dir/;
 use File::ShareDir qw/dist_dir/;
+use File::Temp qw/tempdir/;
+use LWP::Simple qw/get getstore/;
+use Archive::Extract;
+use File::Copy::Recursive qw/ dircopy /;
 use namespace::autoclean;
+
+with 'MooseX::Getopt';
 
 has install_dir => ( isa => 'Path::Class::Dir', is => 'ro', coerce => 1,
     lazy_build => 1,
@@ -17,7 +23,13 @@ has tarball => ( isa => 'Path::Class::File', is => 'ro', coerce => 1,
     lazy_build => 1
 );
 
-has version_number => ( isa => Num, is => 'ro', required => 1, lazy_build => 1 );
+method _build_tarball {
+    my $tarball = $self->download_uri;
+    $tarball =~ s|.+/||;
+    file( $self->_temp_dir, $tarball );
+}
+
+has version_number => ( isa => Str, is => 'ro', required => 1, lazy_build => 1 );
 
 method _build_version_number {
     return '5.2.0' unless $self->has_download_uri;
@@ -31,11 +43,39 @@ method _build_download_uri {
 }
 
 method _build_install_dir {
-    dist_dir 'Alien-ActiveMQ';
+    dir( dist_dir('Alien-ActiveMQ'), $self->version_number );
+}
+
+has _temp_dir => (
+    isa => 'Path::Class::Dir', coerce => 1, is => 'ro', lazy => 1,
+    default => sub { tempdir( XXCLEANUP => 1 ) },
+);
+
+method download_tarball {
+    my $mirror_list = get($self->download_uri);
+    die("Failed to download " . $self->download_uri . "\n") unless $mirror_list;
+    my ($file) = $mirror_list =~ /(http[^"]+\.tar\.gz)/;
+    die("Failed to extract mirror from " . $self->download_uri . "\n") unless $file;
+    my $res = getstore($file, $self->tarball . '');
+    die("Failed to download " . $self->download_uri . "\n") unless $res == 200;
+    $self->tarball;
+}
+
+method unpack_tarball ($tarball) {
+    local $Archive::Extract::PREFER_BIN = 1;
+    my $tar = Archive::Extract->new(archive => $self->tarball.'');
+    $tar->extract(to => $self->_temp_dir.'');
 }
 
 method run {
-    # Noop
+    my $tarball = $self->has_tarball ? $self->tarball : $self->download_tarball;
+    warn("Downloaded tarball to: $tarball\n");
+    $self->unpack_tarball($tarball);   
+    warn("Unpacked tarball $tarball");
+    my $dir = $tarball;
+    $dir =~ s/\.tar\.gz$//;
+    dircopy( $dir => $self->install_dir );
+    warn("ActiveMQ installed in " . $self->install_dir . "\n");
 }
 
 __PACKAGE__->meta->make_immutable;
