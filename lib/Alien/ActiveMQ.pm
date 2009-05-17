@@ -4,6 +4,7 @@ use Method::Signatures::Simple;
 use File::ShareDir qw/dist_dir/;
 use Path::Class qw/file dir/;
 use Scope::Guard;
+use IPC::Run qw/start/;
 use namespace::autoclean;
 
 my $VERSION = 0.00001;
@@ -19,15 +20,15 @@ method run_server ($version) {
         #$version = ( $self->get_installed_versions )[0];
     }
     my $dir = dir( dist_dir('Alien-ActiveMQ'), '5.2.0' );
-    warn("Running $dir");
-    my $file = file( $dir, 'bin', 'activemq' );
-    system("$file &"); # LAME AS A LAME THING, Use IPC::Cmd here
-                       # Need to fork, get child PID to pass into the scope guard
-                       # and it would be nice to be able to grab the output of the server,
-                       # and wait till it said it was started etc..
-    
+    my @cmd = (file( $dir, 'bin', 'activemq' ));
+
+    # TODO - might be nice to grab the output of the server and wait til
+    # it said it was started.  For now, just sleep a bit.
+    warn("Running @cmd");
+    my $h = start \@cmd, \undef;
     sleep 20;
-    return Scope::Guard->new(sub { system("killall java") });
+
+    return Scope::Guard->new(sub { warn("Killing ApacheMQ..."); $h->signal ( "KILL" ) });
 }
 
 1;
