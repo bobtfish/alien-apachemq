@@ -36,7 +36,7 @@ method run_server ($version) {
     # it said it was started.  For now, just sleep a bit.
     warn("Running @cmd");
     my $h = start \@cmd, \undef;
-    sleep 20;
+    sleep 60;
 
     return Scope::Guard->new(sub { 
         warn("Killing ApacheMQ...");
