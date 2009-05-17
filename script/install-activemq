@@ -51,12 +51,16 @@ has _temp_dir => (
     default => sub { tempdir( XXCLEANUP => 1 ) },
 );
 
+# To make it easier to test
+method _get ($uri) { get($uri) }
+method _getstore ($uri) { getstore($uri) }
+
 method download_tarball {
-    my $mirror_list = get($self->download_uri);
+    my $mirror_list = $self->_get($self->download_uri);
     die("Failed to download " . $self->download_uri . "\n") unless $mirror_list;
     my ($file) = $mirror_list =~ /(http[^"]+\.tar\.gz)/;
     die("Failed to extract mirror from " . $self->download_uri . "\n") unless $file;
-    my $res = getstore($file, $self->tarball . '');
+    my $res = $self->_getstore($file, $self->tarball . '');
     die("Failed to download " . $self->download_uri . "\n") unless $res == 200;
     $self->tarball;
 }
@@ -67,6 +71,8 @@ method unpack_tarball ($tarball) {
     $tar->extract(to => $self->_temp_dir.'');
 }
 
+method _dircopy ($from, $to) { dircopy($from, $to) }
+
 method run {
     my $tarball = $self->has_tarball ? $self->tarball : $self->download_tarball;
     warn("Downloaded tarball to: $tarball\n");
@@ -74,7 +80,7 @@ method run {
     warn("Unpacked tarball $tarball");
     my $dir = $tarball;
     $dir =~ s/\.tar\.gz$//;
-    dircopy( $dir => $self->install_dir );
+    $self->_dircopy( $dir => $self->install_dir );
     warn("ActiveMQ installed in " . $self->install_dir . "\n");
 }
 
