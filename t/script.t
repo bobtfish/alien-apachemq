@@ -10,7 +10,7 @@ BEGIN { require "$Bin/../script/install-activemq"; }
     package TestInstall;
     use strict;
     use warnings;
-    use base qw/Alien::Selenium::Install/;
+    use base qw/Alien::ActiveMQ::Install/;
 
     sub _get {}
     sub _getstore {}

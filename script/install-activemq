@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 package # Hide package name from PAUSE
-  Alien::Selenium::Install;
+  Alien::ActiveMQ::Install;
 use Moose;
 use Method::Signatures::Simple;
 use MooseX::Types::Moose qw/Str/;
