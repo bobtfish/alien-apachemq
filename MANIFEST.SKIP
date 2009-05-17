@@ -1,4 +1,4 @@
-\bshare/.exists
+^Alien-ActiveMQ-
 
 # Avoid version control files.
 \bRCS\b
