@@ -16,6 +16,7 @@ requires 'File::Temp';
 requires 'LWP';
 requires 'Archive::Extract';
 requires 'IPC::Cmd';
+requires 'Scope::Guard';
 
 install_share 'share';
 
