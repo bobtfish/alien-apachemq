@@ -53,7 +53,7 @@ has _temp_dir => (
 
 # To make it easier to test
 method _get ($uri) { get($uri) }
-method _getstore ($uri) { getstore($uri) }
+method _getstore ($uri, $file) { getstore($uri, $file) }
 
 method download_tarball {
     my $mirror_list = $self->_get($self->download_uri);
