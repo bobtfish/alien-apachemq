@@ -80,6 +80,9 @@ method run {
     warn("Unpacked tarball $tarball");
     my $dir = $tarball;
     $dir =~ s/\.tar\.gz$//;
+    $dir =~ s/-bin//;
+    die("Could not find where tarball unpacked") unless -d $dir;
+    warn("From $dir to " . $self->install_dir);
     $self->_dircopy( $dir => $self->install_dir );
     warn("ActiveMQ installed in " . $self->install_dir . "\n");
 }
