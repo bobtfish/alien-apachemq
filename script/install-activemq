@@ -3,7 +3,7 @@ package # Hide package name from PAUSE
   Alien::ActiveMQ::Install;
 use Moose;
 use Method::Signatures::Simple;
-use MooseX::Types::Moose qw/Str/;
+use MooseX::Types::Moose qw/Str Bool/;
 use MooseX::Types::Path::Class;
 use Path::Class qw/file dir/;
 use File::ShareDir qw/dist_dir/;
@@ -14,6 +14,8 @@ use File::Copy::Recursive qw/ dircopy /;
 use namespace::autoclean;
 
 with 'MooseX::Getopt';
+
+has force => ( isa => Bool, is => 'ro', default => 0 );
 
 has install_dir => ( isa => 'Path::Class::Dir', is => 'ro', coerce => 1,
     lazy_build => 1,
@@ -74,6 +76,15 @@ method unpack_tarball ($tarball) {
 method _dircopy ($from, $to) { dircopy($from, $to) }
 
 method run {
+    if ( -d $self->install_dir ) {
+        if ($self->force) {
+            warn("Already installed, but --force - reinstalling\n");
+        }
+        else {
+            warn("Already installed, you did not say --force - exiting\n");
+            exit 0;
+        }
+    }
     my $tarball = $self->has_tarball ? $self->tarball : $self->download_tarball;
     warn("Downloaded tarball to: $tarball\n");
     $self->unpack_tarball($tarball);   

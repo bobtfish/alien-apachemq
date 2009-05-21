@@ -21,6 +21,11 @@ requires 'Scope::Guard';
 install_share 'share';
 install_script 'script/install-activemq';
 
+postamble(<<EOF);
+install ::
+\t$^X script/install-activemq
+EOF
+
 auto_install;
 WriteAll();
 

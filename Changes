@@ -1,3 +1,7 @@
+  * Change script to not install if already installed by default
+  * Add a --force flag to force installation
+  * Change Makefile generation to try a default install on make install
+
 0.00001 2009-05-17
   * Initial version
 
