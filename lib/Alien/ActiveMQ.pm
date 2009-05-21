@@ -38,8 +38,11 @@ method run_server ($version) {
     my $h = start \@cmd, \undef;
     
     # Spin until we can get a connection
-    my $stomp;
+    my ($stomp, $loop_count);
     while (! $stomp) {
+        if ($loop_count++ > 300) {
+            die("Can't connect to ActiveMQ after trying 300 seconds.")
+        };
         eval {
             $stomp = Net::Stomp->new( { hostname => 'localhost', port => 61613 } );
         };
