@@ -17,6 +17,7 @@ requires 'LWP';
 requires 'Archive::Extract';
 requires 'IPC::Run';
 requires 'Scope::Guard';
+requires 'Net::Stomp';
 
 install_share 'share';
 install_script 'script/install-activemq';
