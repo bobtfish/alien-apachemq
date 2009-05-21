@@ -8,7 +8,7 @@ use IPC::Run qw/start/;
 use Net::Stomp;
 use namespace::autoclean;
 
-our $VERSION = '0.00001';
+our $VERSION = '0.00003';
 
 #method get_installed_versions {}
 

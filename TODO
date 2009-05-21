@@ -1,4 +1,1 @@
-
-  * Nick the Net::Stomp code from the Catalyst::Engine::STOMP dist
-    test suite to use to test if the server is up instead of sleeping. (Zac)
-
+  * `make test` fails, as it's looking at the staged "share" dir instead of the one that ActiveMQ was installed to.  Fix this.
