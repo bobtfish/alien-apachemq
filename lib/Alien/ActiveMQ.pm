@@ -34,7 +34,7 @@ method run_server ($version) {
     my @cmd = (file( $dir, 'bin', 'activemq' ));
 
     # Start activemq in a subprocess
-    warn("Running @cmd");
+    warn("Running @cmd\n");
     my $h = start \@cmd, \undef;
     
     # Spin until we can get a connection
