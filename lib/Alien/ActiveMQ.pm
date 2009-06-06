@@ -36,7 +36,7 @@ method run_server ($version) {
     # Start activemq in a subprocess
     warn("Running @cmd\n");
     my $h = start \@cmd, \undef;
-    
+
     # Spin until we can get a connection
     my ($stomp, $loop_count);
     while (! $stomp) {
@@ -50,10 +50,12 @@ method run_server ($version) {
             sleep 1;
         }
     }
-    
-    return Scope::Guard->new(sub { 
+
+    return Scope::Guard->new(sub {
         warn("Killing ApacheMQ...");
-        $h->signal ( "KILL" );
+        $h->signal ( "KILL" ) if $h; # FIXME - Need to get the PID out of the process
+                                     #         earlier, as $h can have gone away if we get
+                                     #         here in global destruction.
     });
 }
 
