@@ -52,7 +52,7 @@ method run_server ($version) {
     }
 
     return Scope::Guard->new(sub {
-        warn("Killing ApacheMQ...");
+        warn("Killing ApacheMQ...\n");
         $h ? $h->signal ( "KILL" ) : kill $pid, 15;
     });
 }
