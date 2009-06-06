@@ -1,3 +1,7 @@
+  * Avoid issues when the scope returned is called during global
+    destruction when the IPC::Run object has already been cleaned
+    up.
+
 0.00003
   * Use Net::Stomp to tell when the daemon has started.
 
