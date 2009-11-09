@@ -11,6 +11,7 @@ requires 'MooseX::Types::Path::Class';
 requires 'Method::Signatures::Simple';
 requires 'namespace::autoclean';
 requires 'File::ShareDir';
+requires 'File::Copy::Recursive';
 requires 'Path::Class';
 requires 'File::Temp';
 requires 'LWP';
@@ -18,6 +19,8 @@ requires 'Archive::Extract';
 requires 'IPC::Run';
 requires 'Scope::Guard';
 requires 'Net::Stomp';
+
+requires_external_bin 'java';
 
 install_share 'share';
 install_script 'script/install-activemq';
