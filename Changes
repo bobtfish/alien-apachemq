@@ -2,6 +2,9 @@
     destruction when the IPC::Run object has already been cleaned
     up.
 
+0.00004
+  * Adding missing deps, notably the requirement for java.
+
 0.00003
   * Use Net::Stomp to tell when the daemon has started.
 
