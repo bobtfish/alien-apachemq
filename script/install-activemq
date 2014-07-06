@@ -89,7 +89,7 @@ method run {
     warn("Downloaded tarball to: $tarball\n");
     $self->unpack_tarball($tarball);   
     warn("Unpacked tarball $tarball");
-    my $dir = $tarball;
+    my $dir = $self->_temp_dir->file( $tarball->basename );
     $dir =~ s/\.tar\.gz$//;
     $dir =~ s/-bin//;
     die("Could not find where tarball unpacked") unless -d $dir;
