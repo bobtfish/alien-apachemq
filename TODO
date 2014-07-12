@@ -1,1 +1,2 @@
-  * `make test` fails, as it's looking at the staged "share" dir instead of the one that ActiveMQ was installed to.  Fix this.
+ * Write pod for the install-activemq script, and provide better help.
+

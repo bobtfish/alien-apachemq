@@ -1,3 +1,14 @@
+0.00005
+  * Advanced version of ActiveMQ to current release version.
+  * Fixed script to be more reliable, easier to use.
+  * Changed script to check the tarball or the URI for version number.
+  * Made script clean up temp files.
+  * Added ability for script to check Apache's archives for old releases.
+  * Implemented get_installed_versions()
+  * Better support for multiple installed ActiveMQ versions.
+  * get_version_dir() now has no default value.
+  * Many new tests for the script.
+  * Added optional Kwalitee release test.
   * Avoid issues when the scope returned is called during global
     destruction when the IPC::Run object has already been cleaned
     up.
@@ -15,4 +26,3 @@
 
 0.00001 2009-05-17
   * Initial version
-
