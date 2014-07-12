@@ -1,6 +1,9 @@
 ^TODO$
 ^Alien-ActiveMQ-
 
+\.exists$
+\.perlcriticrc$
+
 # Avoid version control files.
 \bRCS\b
 \bCVS\b
@@ -48,3 +51,6 @@ MANIFEST.SKIP$
 
 # XS shit
 \.(?:bs|c|o)$
+
+# Editor junk
+\.komodoproject$

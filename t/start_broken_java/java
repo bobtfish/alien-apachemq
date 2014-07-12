@@ -1,8 +1,0 @@
-#!/bin/sh
-
-echo ACTIVEMQ_HOME: /home/t0m/perl5/lib/perl5/i486-linux-gnu-thread-multi/auto/Alien/ActiveMQ/5.2.0
-echo ACTIVEMQ_BASE: /home/t0m/perl5/lib/perl5/i486-linux-gnu-thread-multi/auto/Alien/ActiveMQ/5.2.0
-echo Loading message broker from: xbean:activemq.xml
-echo Failed to execute main task. Reason: java.lang.NoClassDefFoundError: org.springframework.core.CollectionFactory
-exit 1;
-

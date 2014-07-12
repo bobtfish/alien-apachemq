@@ -1,69 +1,136 @@
 package Alien::ActiveMQ;
+
 use Moose;
+use MooseX::Types::Path::Class;
 use Method::Signatures::Simple;
 use File::ShareDir qw/dist_dir/;
 use Path::Class qw/file dir/;
 use Scope::Guard;
-use IPC::Run qw/start/;
+use IPC::Run qw/start run/;
 use Net::Stomp;
+use Sort::Versions;
 use namespace::autoclean;
 
-our $VERSION = '0.00004';
+our $VERSION = '0.00005';
 
-#method get_installed_versions {}
+# Note: Many of the methods in this class need to be usable as class methods.
+# This means you can't use Moose attributes, because they try and store data
+# on the class name, which fails.  Only normal methods here.
 
-method get_version_dir ($version) {
-    if (!$version) {
-        #$version = ( $self->get_installed_versions )[0];
-        $version = '5.2.0';
+# To make mocking easier.
+sub _dist_dir {
+    return dir( dist_dir('Alien-ActiveMQ') );
+}
+
+method _output {
+    my $msg = "@_\n";
+    return warn($msg);
+}
+
+method startup_timeout {
+    return 300;
+}
+
+method get_installed_versions {
+    my @dirs     = $self->_dist_dir->children;
+    my @versions = ();
+    foreach my $dir (@dirs) {
+        if ( $dir->basename =~ /^\d[\d.]+$/ ) {
+            push @versions, $dir->basename;
+        }
     }
-    return dir( dist_dir('Alien-ActiveMQ'), $version );
+    return ( sort { versioncmp( $b, $a ); } @versions );
 }
 
-method is_version_installed ($version) {
-    -d $self->get_version_dir($version);
+method get_version_dir($version) {
+    if ( !$version ) {
+        $version = ( $self->get_installed_versions )[0];
+    }
+    if ($version) {
+        return dir( $self->_dist_dir, $version );
+    }
+    return;
 }
 
-method get_licence_filename ($version) {
+method is_version_installed($version) {
+    return $self->get_version_dir($version)
+      && ( -d $self->get_version_dir($version) );
+}
+
+method get_license_filename($version) {
     my $dir = $self->get_version_dir($version);
-    return file($dir, 'LICENSE');
+      return file( $dir, 'LICENSE' );
 }
 
-method run_server ($version) {
+method get_licence_filename($version) {
+    return $self->get_license_filename($version);
+}
+
+method run_server($version) {
     my $dir = $self->get_version_dir($version);
-    my @cmd = (file( $dir, 'bin', 'activemq' ));
+      my @cmd = ( file( $dir, 'bin', 'activemq' ) );
+
+      # Check if we need to use the console verb to get the command to start.
+      my $consoleflag = $self->_check_output( [ @cmd, '--help' ], qr/(stop)/ );
+
+      if ($consoleflag) {
+        push @cmd, 'console';
+    }
 
     # Start activemq in a subprocess
-    warn("Running @cmd\n");
+    $self->_output("Running @cmd");
     my $h = start \@cmd, \undef;
+
     my $pid = $h->{KIDS}[0]{PID}; # FIXME!
     # Spin until we can get a connection
-    my ($stomp, $loop_count);
-    while (! $stomp) {
-        if ($loop_count++ > 300) {
-            die("Can't connect to ActiveMQ after trying 300 seconds.")
-        };
+    my ( $stomp, $loop_count );
+    while ( !$stomp ) {
+        if ( $loop_count++ > $self->startup_timeout ) {
+            $h->signal("KILL");
+            die "Can't connect to ActiveMQ after trying "
+              . $self->startup_timeout
+              . " seconds.";
+        }
         eval {
-            $stomp = Net::Stomp->new( { hostname => 'localhost', port => 61613 } );
+            $stomp = Net::Stomp->new(
+                {
+                    hostname => 'localhost',
+                    port     => 61613
+                }
+            );
         };
         if ($@) {
             sleep 1;
         }
     }
 
-    return Scope::Guard->new(sub {
-        warn("Killing ApacheMQ...\n");
-        $h ? $h->signal ( "KILL" ) : kill $pid, 15;
-    });
+    return Scope::Guard->new(
+        sub {
+            $self->_output("Killing ApacheMQ...");
+            $h ? $h->signal ( "KILL" ) : kill $pid, 15;
+        }
+    );
+}
+
+method _check_output( $cmd, $output ) {
+    my $text = '';
+        run( $cmd, \undef, \$text );
+        if ( my @matches = $text =~ $output ) {
+            return @matches;
+    }
+    return;
 }
 
 1;
 
 __END__
 
+=for stopwords ActiveMQ MQ perl queueing TODO github Doran undef
+
 =head1 NAME
 
-Alien::ActiveMQ - Manages installs of versions of Apache ActiveMQ, and provides a standard way to start an MQ server from perl.
+Alien::ActiveMQ - Manages installs of versions of Apache ActiveMQ, and provides a standard
+way to start an MQ server from perl.
 
 =head1 SYNOPSIS
 
@@ -71,7 +138,7 @@ Alien::ActiveMQ - Manages installs of versions of Apache ActiveMQ, and provides 
 
     {
         my $mq = Alien::ActiveMQ->run_server
-        
+
         # Apache MQ is now running on the default port, you
         # can now test your Net::Stomp based code
     }
@@ -92,24 +159,34 @@ Runs an ActiveMQ server instance for you.
 Returns a value which you must keep in scope until you want the ActiveMQ server
 to shutdown.
 
+=head2 get_installed_versions ()
+
+Returns a list of all the installed versions.  Will return an empty list if nothing is installed.
+
 =head2 get_version_dir ([ $version ])
 
 Returns a L<Path::Class::Dir> object to where a particular version of ActiveMQ
-is installed.
+is installed.  Passing an explicit version returns where that version would be installed,
+even if it is not currently installed.
 
-If a version is not provided, then the latest available version at the time of
-writing (5.2.0) is used.
+If a version is not provided, then the latest available version installed is returned.
+
+If no versions are installed  and no version is passed, undef is returned.
 
 =head2 is_version_installed ([ $version ])
 
 Returns true if the version directory for the supplied version exists.
 
-=head2 get_license_file ([ $version ])
+=head2 get_license_filename ([ $version ])
 
 Returns a L<Path::Class::File> object representing the text file containing the
 license for a particular version of Apache ActiveMQ.
 
-=head1 TODO
+=head2 get_licence_filename ([ $version ])
+
+Original spelling for get_license_filename() method.  Retained for backward compatibility.
+
+=head1 BUGS AND LIMITATIONS
 
 This is the first release of this code, and as such, it is very light on
 features, and probably full of bugs.
@@ -134,8 +211,9 @@ Patches (or forks on github) are, as always, welcome.
 
     Tomas Doran (t0m) <bobtfish@bobtfish.net>
     Zac Stevens (zts) <zts@cryptocracy.com>
+   Louis Erickson (loki) <lerickson@rdwarf.net>
 
-=head1 COPYRIGHT AND LICENSE
+=head1 LICENSE AND COPYRIGHT
 
 This software is copyright (c) 2009 by Tomas Doran.
 
@@ -146,4 +224,3 @@ Note that the Apache MQ code which is installed by this software is licensed
 under the Apache 2.0 license, which is included in the installed software.
 
 =cut
-

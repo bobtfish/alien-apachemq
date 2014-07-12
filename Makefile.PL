@@ -19,6 +19,9 @@ requires 'Archive::Extract';
 requires 'IPC::Run';
 requires 'Scope::Guard';
 requires 'Net::Stomp';
+requires 'Const::Fast';
+requires 'Sort::Versions';
+test_requires 'Test::MockModule';
 
 requires_external_bin 'java';
 
@@ -32,4 +35,3 @@ EOF
 
 auto_install;
 WriteAll();
-
