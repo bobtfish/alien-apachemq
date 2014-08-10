@@ -1,4 +1,4 @@
-0.00005_01
+0.00004_01
   * Advanced version of ActiveMQ to current release version.
   * Fixed script to be more reliable, easier to use.
   * Changed script to check the tarball or the URI for version number.
