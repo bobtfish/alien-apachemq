@@ -1,7 +1,6 @@
 ^TODO$
 ^Alien-ActiveMQ-
 
-\.exists$
 \.perlcriticrc$
 
 # Avoid version control files.
