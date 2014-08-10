@@ -189,7 +189,7 @@ is_deeply( [ Alien::ActiveMQ::Mock->get_installed_versions() ],
     my $_output_data = [];
     local *Alien::ActiveMQ::_output = sub {
         my $class = shift;
-        push $_output_data, @_;
+        push @{$_output_data}, @_;
     };
 
     my $amq = Alien::ActiveMQ->new;
