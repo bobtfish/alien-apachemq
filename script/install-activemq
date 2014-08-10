@@ -16,7 +16,7 @@ use Const::Fast;
 
 with 'MooseX::Getopt';
 
-our $VERSION = '0.00005_01';
+our $VERSION = '0.00004_01';
 
 const my $DEFAULT_ACTIVEMQ_VERSION => '5.10.0';
 
