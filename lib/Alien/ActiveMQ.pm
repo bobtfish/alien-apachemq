@@ -11,7 +11,7 @@ use Net::Stomp;
 use Sort::Versions;
 use namespace::autoclean;
 
-our $VERSION = '0.00004_01';
+our $VERSION = '0.00005';
 
 # Note: Many of the methods in this class need to be usable as class methods.
 # This means you can't use Moose attributes, because they try and store data
@@ -211,7 +211,7 @@ Patches (or forks on github) are, as always, welcome.
 
     Tomas Doran (t0m) <bobtfish@bobtfish.net>
     Zac Stevens (zts) <zts@cryptocracy.com>
-   Louis Erickson (loki) <lerickson@rdwarf.net>
+   Louis Erickson (loki) <laufeyjarson@laufeyjarson.com>
 
 =head1 LICENSE AND COPYRIGHT
 
