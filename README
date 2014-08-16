@@ -1,4 +1,4 @@
-This archive contains the distribution Alien-ActiveMQ, version 0.0004_01:
+This archive contains the distribution Alien-ActiveMQ, version 0.0005:
 
     Manages installs of versions of Apache ActiveMQ, and provides a standard
     way to start an MQ server from Perl.
