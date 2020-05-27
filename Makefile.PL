@@ -22,6 +22,7 @@ requires 'Net::Stomp';
 requires 'Const::Fast';
 requires 'Sort::Versions';
 test_requires 'Test::MockModule';
+test_requires 'Test::Exception';
 
 requires_external_bin 'java';
 

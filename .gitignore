@@ -1,13 +1,11 @@
 Makefile.old
 MANIFEST.bak
-MANIFEST
 inc
 .perlcriticrc
 Alien-ActiveMQ.komodoproject
 MYMETA.json
 MYMETA.yml
 Makefile
-META.yml
 blib
 pm_to_blib
 t/data/notamq-5.1.9
